@@ -45,7 +45,10 @@ La hoja `tabla` es un **diccionario**, no una fuente de ejecución: la actividad
 
 ## 3. Qué se construyó
 
-1. **Aplicativo web** (`index.html`): pestañas Plan anual, Programa semanal y Recetas.
+1. **Aplicativo web** (`index.html`): pantalla de carga con logo; pestañas Plan anual, Programa semanal y Recetas.
+   - **Descarga del plan:** el mismo Excel cargado, con solo las casillas modificadas (se edita el XML del archivo, así que se conservan fórmulas, formato condicional y modelo de datos). El conteo de adicionales va en una hoja `ADICIONALES`.
+   - **Descarga del programa semanal:** hojas WKxx, GANTT WKxx y MATERIALES WKxx (formato similar al actual).
+   - **Base compartida de recetas:** `data/recetas.json` en el repositorio, con guardado por token de GitHub, control de versiones y aviso de conflictos.
 2. **Excel con la columna Código único** (`RI-PG-004 … con codigo.xlsx`): se insertó la columna G sin alterar fórmulas (recalculado y comparado con el original: 0 diferencias).
 3. **Auditoría de recetas** (`AUDITORIA_RECETAS_MATERIALES.xlsx`): cruce de OTs preventivas (OM03) con el plan por equipo y similitud de texto (≥ 85 de 100).
    - 5.542 OTs OM03 en equipos del plan; 3.428 asignadas a una actividad (62 %).
@@ -63,6 +66,8 @@ La hoja `tabla` es un **diccionario**, no una fuente de ejecución: la actividad
 | Recetas de materiales | **Estándar y editable**, no calculada del historial: en el historial, para la misma actividad, la mayoría de los materiales aparece en menos del 10 % de las ejecuciones |
 | Redondeo de cantidades | No se aplica: redondear materiales caros de poco uso multiplicaba el costo por 4 (S/ 229 → S/ 916 en una semana de prueba) |
 | Cargas en la app | Solo el plan y el stock. Los exports de SAP del historial no se vuelven a subir |
+| Base compartida de recetas | Archivo JSON en el mismo repositorio, escrito con la API de GitHub: no requiere servicios nuevos, deja historial de cambios y limita la escritura a quienes tienen permiso. Se eligió para el borrador; la base corporativa se define con TI |
+| Descarga del plan | Se edita solo el valor de las casillas marcadas dentro del .xlsx original, en lugar de regenerar el archivo, porque regenerarlo perdería formatos y el modelo de datos |
 | Programa semanal | Pantalla aparte para no sobrecargar el plan anual |
 | Hojas WK/GANTT | Primero se replica la lógica en pantalla; la exportación en el formato exacto queda para después |
 
@@ -81,13 +86,12 @@ La hoja `tabla` es un **diccionario**, no una fuente de ejecución: la actividad
 ## 6. Pendientes
 
 - [ ] Publicar en GitHub Pages y probar la dirección.
-- [ ] Exportar el programa semanal al formato `WKxx` / `GANTT WKxx`.
-- [ ] Guardar las marcas del plan y las recetas en un lugar compartido (hoy son por navegador).
+- [ ] Probar las descargas y el guardado de recetas en GitHub con el equipo (se probaron en simulación, no contra el repositorio real).
+- [ ] Comparar el Excel del programa semanal con el formato actual y ajustar columnas si hace falta.
 - [ ] Validar las recetas estándar, empezando por las actividades de mayor gasto en materiales.
 - [ ] Confirmar el umbral de 80 % y los responsables por defecto (TELMO / MARCO).
-- [ ] Decidir cómo guardar el conteo de adicionales al exportar el plan a Excel (el Excel solo tiene los códigos 1 a 4).
 - [ ] Vincular con la app de stock (carrito de pedido con los faltantes de la semana).
-- [ ] Revisión de TI: seguridad, base de datos compartida y migración.
+- [ ] Revisión de TI: seguridad, base de datos corporativa en lugar de GitHub y migración.
 
 ---
 

@@ -1,9 +1,9 @@
-# Carpeta `data/` (opcional)
+# Carpeta `data/`
 
-Aquí puede ir **`recetas.json`**: la base común de recetas de materiales.
+Aquí vive **`recetas.json`**: la base compartida de recetas de materiales.
 
-- El aplicativo la busca al abrirse. Si existe, la usa como base compartida; si no existe, usa la sugerencia del historial que ya trae incorporada.
-- Se genera desde la pestaña **Recetas → Exportar todas las recetas (JSON)**. Se sube a esta carpeta con el nombre exacto `recetas.json`.
-- Las ediciones que cada persona haga después se guardan en su propio navegador y tienen prioridad sobre este archivo.
+- **No hace falta crearlo a mano.** La aplicación lo crea la primera vez que alguien con permiso usa *Recetas → Guardar en la base compartida*. Hasta entonces, la aplicación usa la sugerencia del historial que trae incorporada.
+- Cada guardado es un *commit*: el historial del repositorio sirve de bitácora y permite volver a una versión anterior.
+- También se puede subir a mano un archivo exportado con *Recetas → Exportar todas las recetas (JSON)*, con el nombre exacto `recetas.json`.
 
-No subir aquí los Excel del plan, del programa semanal ni del stock: el aplicativo los lee en el navegador de cada persona.
+No subir aquí los Excel del plan, del programa semanal ni del stock: la aplicación los lee en el navegador de cada persona.
