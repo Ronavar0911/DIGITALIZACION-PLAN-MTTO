@@ -33,7 +33,7 @@ Las recetas se guardan en `data/recetas.json` de este repositorio; cada guardado
 3. **Programa semanal:** elegir semana, cuántas semanas de pendientes traer y cuántas adelantar; *Generar programa*. Opcional: cargar el stock (`APP_STOCK_MATERIALES.xlsx`, hoja `TABLERO`) para ver faltantes.
 4. **Recetas:** definir los materiales y cantidades estándar de cada actividad.
 
-Código de las casillas: 1 programada · 2 programada y ejecutada · 3 ejecutada fuera de programa · 4 adicional (la casilla morada muestra cuántas veces).
+Símbolos de las casillas (los mismos del Excel): **1** contorno naranja = programada por ejecutar (en rojo si ya venció sin ejecutarse) · **2** contorno naranja + check azul = programada y ejecutada · **3** solo check azul = ejecutada fuera de programa · **4** cruz roja sobre celda turquesa = adicional (con el número de veces si son más de una).
 
 ## Publicar en GitHub Pages
 

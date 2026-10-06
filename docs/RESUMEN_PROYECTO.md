@@ -22,6 +22,8 @@ La hoja `tabla` es un **diccionario**, no una fuente de ejecución: la actividad
 
 - **Campaña:** de la semana ISO 27 a la 26 del año siguiente (la 26-27 va de la semana 27 de 2026 a la 26 de 2027).
 - **Códigos de las casillas semanales:** 1 programada sin ejecutar · 2 programada y ejecutada · 3 ejecutada fuera de programa · 4 adicional.
+  - En pantalla se usan los símbolos del Excel: 1 contorno naranja (rojo si está vencida) · 2 contorno naranja + check azul · 3 check azul · 4 cruz roja sobre turquesa.
+- **Filas de resumen por semana:** *Programadas* = 1+2 · *Ejecutadas* = 2+3 (mismo criterio que el Excel) · *Cumplimiento %* = 2 ÷ (1+2), es decir, solo las programadas que se ejecutaron.
 - **Avance del plan** (igual que el Excel): ejecutadas (2+3) ÷ programadas (1+2). Con el archivo del 06/10/2026: **26,60 %** (340 de 1.278) en la campaña 26-27.
 - **Pendiente:** casilla 1 en una semana anterior a la *semana de corte* (por defecto, la semana actual).
 - **Cumplimiento semanal:** programadas ejecutadas (2) ÷ programadas (1+2). Se marca en rojo por debajo de **80 %** (umbral propuesto, por confirmar).
