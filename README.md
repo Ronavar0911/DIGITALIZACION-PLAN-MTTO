@@ -29,7 +29,10 @@ Las recetas se guardan en `data/recetas.json` de este repositorio; cada guardado
 ## Cómo usarla
 
 1. Abrir la página y arrastrar (o seleccionar) el Excel del plan (hoja `MM.TT …`, con la columna **Código único**). La hoja `tabla` del mismo archivo aporta el nombre SAP (OTM), la familia y el equipo.
-2. **Plan anual:** elegir campaña y *semana de corte*; marcar la ejecución con el pincel **Registrar ejecución**.
+2. **Plan anual:** elegir campaña y *semana de corte* y marcar las casillas con el pincel:
+   - **Registrar ejecución (+1):** cada clic suma *una* ejecución realizada. Casilla vacía → fuera de programa; programada → ejecutada; ya ejecutada → adicional, y los clics siguientes suben el número de adicionales.
+   - **Programada / Ejecutada / Fuera prog. / Adicional:** dejan la casilla directamente en ese estado, sin contar nada.
+   - **Ciclar estados:** cada clic pasa al siguiente estado; sirve para corregir.
 3. **Programa semanal:** elegir semana, cuántas semanas de pendientes traer y cuántas adelantar; *Generar programa*. Opcional: cargar el stock (`APP_STOCK_MATERIALES.xlsx`, hoja `TABLERO`) para ver faltantes.
 4. **Recetas:** definir los materiales y cantidades estándar de cada actividad.
 
