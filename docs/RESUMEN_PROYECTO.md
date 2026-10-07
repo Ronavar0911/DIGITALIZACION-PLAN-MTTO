@@ -11,7 +11,7 @@
 |---|---|---|
 | `RI-PG-004 … RIEGO.xlsx` | Plan anual: hoja `MM.TT 2026-2027` (actividades y semanas 2023–2027) y hoja `tabla` (diccionario ACTIVIDADES_PLAN ↔ SMARTBERRY ↔ OTMs) | Se carga en la app cada vez |
 | `PROGRAMA_SEMANAL_ACTIVIDADES.xlsx` | Formato actual del programa (hojas `WKxx` y `GANTT WKxx`); sirvió de modelo | Solo referencia |
-| `APP_STOCK_MATERIALES.xlsx` (hoja `TABLERO`) | Stock, pendiente por OC/SOLPED y precio unitario por material | Se carga en la app (única carga adicional) |
+| `APP_STOCK_MATERIALES.xlsx` (hoja `TABLERO`) | Stock, pendiente por OC/SOLPED y precio unitario por material | Lo carga y publica una persona; los demás ven el stock compartido (`data/stock.json`) |
 | IW39, MB51, IH08 (SAP, 03/07/2023 al 06/10/2026) | Historial de OTs y consumos, usado **una sola vez** para sugerir recetas | No se cargan en la app |
 
 La hoja `tabla` es un **diccionario**, no una fuente de ejecución: la actividad se escribe distinto en el Excel (ACTIVIDADES_PLAN), en SmartBerry y en SAP (OTM). El nombre que se usa en el programa semanal es el de SAP, sin el sector.
@@ -47,7 +47,7 @@ La hoja `tabla` es un **diccionario**, no una fuente de ejecución: la actividad
 
 ## 3. Qué se construyó
 
-1. **Aplicativo web** (`index.html`): pantalla de carga con logo; pestañas Plan anual, Programa semanal y Recetas.
+1. **Aplicativo web** (`index.html`): pantalla de carga con logo; pestañas Plan anual, Programa semanal, Recetas, **Equipos** y **Reservas OT**.
    - **Descarga del plan:** el mismo Excel cargado, con solo las casillas modificadas (se edita el XML del archivo, así que se conservan fórmulas, formato condicional y modelo de datos). El conteo de adicionales va en una hoja `ADICIONALES`.
    - **Descarga del programa semanal:** hojas WKxx, GANTT WKxx y MATERIALES WKxx (formato similar al actual).
    - **Base compartida de recetas:** `data/recetas.json` en el repositorio, con guardado por token de GitHub, control de versiones y aviso de conflictos.
@@ -69,6 +69,9 @@ La hoja `tabla` es un **diccionario**, no una fuente de ejecución: la actividad
 | Redondeo de cantidades | No se aplica: redondear materiales caros de poco uso multiplicaba el costo por 4 (S/ 229 → S/ 916 en una semana de prueba) |
 | Cargas en la app | Solo el plan y el stock. Los exports de SAP del historial no se vuelven a subir |
 | Base compartida de recetas | Archivo JSON en el mismo repositorio, escrito con la API de GitHub: no requiere servicios nuevos, deja historial de cambios y limita la escritura a quienes tienen permiso. Se eligió para el borrador; la base corporativa se define con TI |
+| Stock compartido | Una persona carga el maestro y publica solo los materiales de las recetas en `data/stock.json`; los demás lo ven sin cargar archivos. Evita que cada usuario suba un archivo de varios MB |
+| Equipos y Reservas OT | Se incorporan a esta aplicación (venían de la app de stock): aquí están el plan, las OTs por equipo y su relación con las actividades. Todos los equipos de riego, con los del plan marcados |
+| Temporadas anteriores | Datos **divididos por temporada** y cargados bajo demanda: al abrir solo se descarga el índice (~50 KB) y la temporada actual; las cerradas se piden al elegirlas. Evita cargar 3 años a la vez |
 | Descarga del plan | Se edita solo el valor de las casillas marcadas dentro del .xlsx original, en lugar de regenerar el archivo, porque regenerarlo perdería formatos y el modelo de datos |
 | Programa semanal | Pantalla aparte para no sobrecargar el plan anual |
 | Hojas WK/GANTT | Primero se replica la lógica en pantalla; la exportación en el formato exacto queda para después |
@@ -88,6 +91,9 @@ La hoja `tabla` es un **diccionario**, no una fuente de ejecución: la actividad
 ## 6. Pendientes
 
 - [ ] Publicar en GitHub Pages y probar la dirección.
+- [ ] Agregar la columna **Orden** al layout del MB51 del maestro (mismo rango: desde el inicio de la temporada hasta hoy). La aplicación ya lo lee al publicar.
+- [ ] Al cerrar cada temporada, revisar que el archivo `data/ots/<temporada>.json` quede completo.
+- [ ] Definir quién publica el stock y con qué frecuencia (antes de armar el programa de cada semana).
 - [ ] Probar las descargas y el guardado de recetas en GitHub con el equipo (se probaron en simulación, no contra el repositorio real).
 - [ ] Comparar el Excel del programa semanal con el formato actual y ajustar columnas si hace falta.
 - [ ] Validar las recetas estándar, empezando por las actividades de mayor gasto en materiales.
