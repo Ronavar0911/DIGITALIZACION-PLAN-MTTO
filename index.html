@@ -111,6 +111,22 @@ tr.off td:not(.c){color:var(--mut)}.s2{left:var(--l2,250px)}tbody tr:hover td.sl
 details.ana{margin-bottom:12px}details.ana>summary{cursor:pointer;list-style:none;display:flex;justify-content:space-between;align-items:baseline;gap:10px;padding:6px 2px 8px;color:var(--mut);font-size:12px}details.ana>summary::-webkit-details-marker{display:none}details.ana>summary b{letter-spacing:.08em;font-size:12px;color:var(--mut)}details.ana>summary::before{content:'▾';margin-right:6px;color:var(--mut)}details.ana:not([open])>summary::before{content:'▸'}details.ana>summary b{margin-right:auto}
 #wsv{background:var(--ac);border-color:var(--ac);color:#fff;font-weight:700}#wsv.done{background:var(--card);border-color:var(--bd);color:var(--ok)}#wsv:disabled{cursor:default}
 #top #shsv,#top #shpub{display:none}
+
+/* ===== Plan anual v2: campaña arriba, análisis, y fila de la semana en 3 zonas ===== */
+.ksec.camp{background:var(--hfe-gradient);border:0;color:#fff;box-shadow:var(--hfe-shadow-card)}
+.ksec.camp .kh b,.ksec.camp .kh span{color:#fff}.ksec.camp .kh span{opacity:.85}
+.ksec.camp .k{background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.22);border-left:4px solid var(--hfe-sky-2);box-shadow:none}
+.ksec.camp .k small,.ksec.camp .k span{color:rgba(255,255,255,.82)}.ksec.camp .k b{color:#fff}
+.ksec.camp .btn2.sm{background:rgba(255,255,255,.14);color:#fff;border-color:rgba(255,255,255,.45)}.ksec.camp .btn2.sm:hover{background:#fff;color:var(--hfe-blue)}
+.wkrow{display:grid;grid-template-columns:250px minmax(0,1fr) 290px;gap:12px;margin-bottom:12px;align-items:stretch}
+@media(max-width:1250px){.wkrow{grid-template-columns:250px minmax(0,1fr)}.wkrow .cvz{grid-column:1/-1}}@media(max-width:800px){.wkrow{grid-template-columns:1fr}}
+.wsz{margin:0;display:flex;align-items:center;justify-content:center;border-top:3px solid var(--ac);padding:18px 16px}.wsz .wsb{display:flex;flex-direction:column;align-items:center;gap:6px;width:100%}
+.wsz small{letter-spacing:.08em;color:var(--mut);font-size:11px;font-weight:600}.wsz .big b{font-size:52px}.wsz .big button{width:36px;height:36px;font-size:20px}
+.wkz,.cvz{border-radius:var(--hfe-radius);padding:12px 14px;border:1px solid var(--bd)}
+.wkz{background:var(--hfe-sky-2);display:flex;flex-direction:column}.wkz .kp.k3{flex:1;align-content:center}.cvz .zh{flex-wrap:wrap}.cvz{background:color-mix(in srgb,var(--bad) 7%,var(--card));border-color:color-mix(in srgb,var(--bad) 25%,var(--bd))}
+.zh{display:flex;justify-content:space-between;align-items:baseline;gap:8px;margin-bottom:10px}.zh b{font-size:12px;letter-spacing:.08em;color:var(--mut)}.zh span{font-size:12px;color:var(--mut)}
+.kp.k3{grid-template-columns:repeat(3,1fr);margin:0}.kp.k1{grid-template-columns:1fr;margin:0}.wkz .k,.cvz .k{padding:8px 10px}.wkz .k b,.cvz .k b{font-size:20px}
+@media(max-width:700px){.kp.k3{grid-template-columns:repeat(2,1fr)}}
 </style></head><body><main>
 <input type="file" id="f" accept=".xlsx,.xlsm" hidden>
 <header id="top" hidden><div class="logo sm" role="img" aria-label="Hortifrut"></div><div class="tt"><h1>Plan anual de mantenimiento</h1><div class="mut" id="msg2"></div><div class="mut" id="shs"></div></div><div class="shb"><button id="shsv" hidden>Guardar cambios</button><button id="shpub" hidden>Publicar plan para todos</button><button id="shrl" class="btn2" hidden>Actualizar</button><button id="shcn" class="btn2" hidden>Conectar para guardar</button><label class="btn2" for="f" title="Solo para el administrador: carga otro Excel y publícalo para todos">Cargar otro plan</label></div></header>
@@ -126,10 +142,10 @@ details.ana{margin-bottom:12px}details.ana>summary{cursor:pointer;list-style:non
 <div id="app" hidden>
 <div class="tabs" id="tabs"><button data-t="1" class="on">Plan anual</button><button data-t="2">Programa semanal</button><button data-t="3">Recetas</button><button data-t="4">Equipos</button><button data-t="5">Reservas OT</button></div>
 <div id="pg1">
-<div class="card wkb"><div class="wsb"><small>SEMANA DE CORTE</small><div class="big"><button id="wp" aria-label="Semana anterior">‹</button><b id="wn">–</b><button id="wnx" aria-label="Semana siguiente">›</button></div><span id="wd"></span><input id="cy" type="hidden"><input id="cw" type="hidden"><div class="wsr"><select id="wsel" aria-label="Ir a la semana"></select><button id="wt">Ir a hoy</button></div></div><div id="kp1"></div></div>
 <div id="kp2"></div>
-<div id="cvk"></div>
-<details class="ana" id="ana" open><summary><b>ANÁLISIS</b><span>distribución de actividades por semana y avance por área · toca para plegar</span></summary><div class="two"><div class="card"><h2>Distribución de actividades por semana</h2><div id="ch"></div></div><div class="card"><h2 id="aat">Avance por área de mantenimiento</h2><div id="aa"></div></div></div></details>
+<details class="ana" id="ana" open><summary><b>ANÁLISIS DE LA CAMPAÑA</b><span>distribución de actividades por semana y avance por área · toca para plegar</span></summary><div class="two"><div class="card"><h2>Distribución de actividades por semana</h2><div id="ch"></div></div><div class="card"><h2 id="aat">Avance por área de mantenimiento</h2><div id="aa"></div></div></div></details>
+<div class="wkrow"><div class="card wsz"><div class="wsb"><small>SEMANA DE CORTE</small><div class="big"><button id="wp" aria-label="Semana anterior">‹</button><b id="wn">–</b><button id="wnx" aria-label="Semana siguiente">›</button></div><span id="wd"></span><input id="cy" type="hidden"><input id="cw" type="hidden"><div class="wsr"><select id="wsel" aria-label="Ir a la semana"></select><button id="wt">Ir a hoy</button></div></div></div><div class="wkz" id="kp1"></div><div class="cvz" id="cvk"></div></div>
+<div id="cvp"></div>
 <div class="card"><div class="fl">
 <label>Campaña<select id="camp"></select></label>
 
@@ -246,13 +262,13 @@ $('#rs').hidden=!edit;$('#rs').textContent=`Restablecer ${edit} cambio${edit>1?'
 const K=(l,v,s,c)=>`<div class="k" title="${l}: ${v}${s?' · '+s:''}" style="border-left-color:var(--${c||'ac'})"><small>${l}</small><b>${v}</b><span>${s}</span></div>`;
 const mm=isoMon(+$('#cy').value,+$('#cw').value),ee=new Date(mm),dd=d=>d.toISOString().slice(8,10)+'/'+d.toISOString().slice(5,7),r1=x=>Math.round(x*10)/10,ca=$('#camp').value;ee.setUTCDate(ee.getUTCDate()+6);
 const past=cut<TK,hasW=ci>=0;
-$('#kp1').innerHTML=`<div class="kp k6">`
+$('#kp1').innerHTML=`<div class="zh"><b>INDICADORES DE LA SEMANA ${$('#cw').value}</b><span>${dd(mm)} – ${dd(ee)} · solo esta semana</span></div><div class="kp k3">`
 +K('Programadas',hasW?cp:'–','actividades en la semana','fp')+K('Ejecutadas según plan',hasW?cc[2]:'–',hasW?`de ${cp} programadas`:'','ok')
 +K(past?'Pendientes de la semana':'Por ejecutar',hasW?cc[1]:'–',past?'programadas sin ejecutar':'programadas aún abiertas',past?'bad':'pen')
 +K('Cumplimiento semanal',hasW&&cp?pc(cc[2],cp):'–',hasW?`${cc[2]} de ${cp}`:'','ok')+K('Fuera de prog. / adicionales',hasW?`${cc[3]} / ${T.wad}`:'–','ejecutadas en la semana','ad')
 +K('Jornales de la semana',hasW?r1(T.wje):'–',hasW?`de ${r1(T.wjp)} programados`:'')+`</div>`;
 const cc2={};V.rows.forEach(a=>{if(a.code)cc2[a.code]=(cc2[a.code]||0)+1});const nCod=Object.keys(cc2).length,shCod=V.rows.filter(a=>a.code&&cc2[a.code]>1).length;
-$('#kp2').innerHTML=`<div class="ksec"><div class="kh"><b>PLAN ${ca==='all'?'HISTÓRICO':'DE LA CAMPAÑA '+cl(+ca)}</b><span>acumulado de todo el período <button type="button" class="btn2 sm" id="kmore" aria-expanded="${!!V.more}">${V.more?'Ver menos':'Ver más indicadores'}</button></span></div><div class="kp">`
+$('#kp2').innerHTML=`<div class="ksec camp"><div class="kh"><b>PLAN ${ca==='all'?'HISTÓRICO':'DE LA CAMPAÑA '+cl(+ca)}</b><span>acumulado de todo el período <button type="button" class="btn2 sm" id="kmore" aria-expanded="${!!V.more}">${V.more?'Ver menos':'Ver más indicadores'}</button></span></div><div class="kp">`
 +K('Avance del plan',pc(T.e,T.p),`${T.e} de ${T.p} ejecuciones`)+K('Cumplimiento a la fecha',pc(T.c2c,T.pc),`${T.c2c} de ${T.pc} programadas hasta la sem ${$('#cw').value}`,'ok')
 +K('Pendientes acumuladas',T.x,'programadas vencidas sin ejecutar','bad')+K('Fuera de programa',T.fp,'ejecutadas sin estar programadas','fp')+`</div>`
 +(V.more?`<div class="kp" style="margin-top:10px">`+K('Adicionales',T.ad,'ejecuciones adicionales (suma de conteos)','ad')+K('Jornales ejecutados',Math.round(T.je),`de ${Math.round(T.jp)} programados (${pc(T.je,T.jp)})`)+K('Actividades al día',pc(T.ok,T.tot),`${T.ok} de ${T.tot} sin pendientes`,'ok')+K('Códigos únicos',nCod,nCod?`${V.rows.length} actividades · ${shCod} comparten código`:'sin código en el archivo','fp')+`</div>`:'')+`</div>`;
@@ -658,17 +674,15 @@ async function cvIn(host,seasons,pred,o){host.innerHTML='<div class="mut" style=
 async function eqCv(L){const h=$('#eqcv');if(!h)return;if(!EQ.cv){h.innerHTML='';return}const ix=OT.idx,ts=EQ.t==='todas'?ix.temporadas:[EQ.t],ids=new Set(L.map(e=>e.id));
  h.innerHTML='<div class="card"><h2>Mantenimientos correctivos (OM01) <span class="mut" style="font-weight:400">de los equipos de la lista · toca una orden para ver sus materiales</span></h2><div id="eqcvl"></div></div>';await cvIn($('#eqcvl'),ts,r=>ids.has(r.eq),{})}
 async function cvUpdate(){const host=$('#cvk');if(!host||!D)return;const cy=+$('#cy').value,cw=+$('#cw').value,se=cvSeason(cy,cw),wk=cy*100+cw,tk=se+'|'+wk;if(CV.k===tk&&CV.ready)return;CV.k=tk;CV.ready=false;const my=++CV.seq;
- host.innerHTML=`<div class="ksec"><div class="kh"><b>CORRECTIVOS (OM01)</b><span>cargando…</span></div></div>`;let d=null;try{d=await cvData([se])}catch(x){}
+ host.innerHTML=`<div class="zh"><b>CORRECTIVOS (OM01)</b><span>cargando…</span></div>`;let d=null;try{d=await cvData([se])}catch(x){}
  if(my!==CV.seq)return;CV.d=d;CV.se=se;CV.wk=wk;CV.ready=true;cvDraw()}
-function cvDraw(){const host=$('#cvk');if(!host)return;const d=CV.d;if(!d||!(d.ix&&d.ix.equipos)){host.innerHTML=`<div class="ksec"><div class="kh"><b>CORRECTIVOS (OM01)</b><span>sin datos de órdenes publicados para esta campaña</span></div></div>`;return}
+function cvDraw(){const host=$('#cvk'),p=$('#cvp');if(!host)return;const d=CV.d;if(!d||!(d.ix&&d.ix.equipos)){host.innerHTML=`<div class="zh"><b>CORRECTIVOS (OM01)</b><span>sin datos de órdenes publicados</span></div>`;if(p)p.innerHTML='';return}
  const all=cvRows(d,()=>true),wr=all.filter(r=>r.wk===CV.wk),sum=a=>a.reduce((x,r)=>x+r.k,0),eqs=a=>new Set(a.map(r=>r.eq)).size,wl=CV.wk%100;
- host.innerHTML=`<div class="ksec"><div class="kh"><b>CORRECTIVOS (OM01)</b><span>órdenes correctivas de SAP por fecha de creación · toca un contador para ver la lista con equipos y materiales</span></div><div class="kp">
-  ${kc('Correctivos · semana '+wl,fx(wr.length,0),`${eqs(wr)} equipo(s) · S/ ${fx(sum(wr),0)}`,'bad','data-m="w" aria-pressed="'+(CV.open&&CV.mode==='w')+'" tabindex="0"')}
-  ${kc('Correctivos · campaña '+CV.se,fx(all.length,0),`${eqs(all)} equipo(s) · S/ ${fx(sum(all),0)}`,'bad','data-m="c" aria-pressed="'+(CV.open&&CV.mode==='c')+'" tabindex="0"')}
-  ${kc('Con materiales · semana',fx(wr.filter(r=>r.nm).length,0),`de ${wr.length} correctivos`,'pen')}${kc('Materiales distintos · semana',fx(new Set(wr.flatMap(r=>r.mats.map(m=>m.m))).size,0),'en los correctivos de la semana','fp')}</div>
-  <div id="cvp"></div></div>`;
+ host.innerHTML=`<div class="zh"><b>CORRECTIVOS (OM01)</b><span>toca para ver la lista</span></div><div class="kp k1">
+  ${kc('Semana '+wl,fx(wr.length,0),`${eqs(wr)} equipo(s) · S/ ${fx(sum(wr),0)}`,'bad','data-m="w" aria-pressed="'+(CV.open&&CV.mode==='w')+'" tabindex="0"')}
+  ${kc('Campaña '+CV.se,fx(all.length,0),`${eqs(all)} equipo(s) · S/ ${fx(sum(all),0)}`,'bad','data-m="c" aria-pressed="'+(CV.open&&CV.mode==='c')+'" tabindex="0"')}</div>`;
  host.querySelectorAll('[data-m]').forEach(k=>{const tg=()=>{const m=k.dataset.m;if(CV.open&&CV.mode===m)CV.open=false;else{CV.open=true;CV.mode=m}cvDraw()};k.onclick=tg;k.onkeydown=e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();tg()}}});
- if(CV.open){const rows=CV.mode==='w'?wr:all,p=$('#cvp');p.innerHTML=`<div class="card" style="margin:10px 0 0"><h2>${CV.mode==='w'?'Correctivos de la semana '+wl+' ('+fx(rows.length,0)+')':'Correctivos de la campaña '+CV.se+' ('+fx(rows.length,0)+')'} <span class="mut" style="font-weight:400">· toca una orden para ver sus materiales</span></h2><div id="cvl"></div></div>`;cvTable($('#cvl'),rows,{wk:CV.mode==='c'})}}
+ if(CV.open){const rows=CV.mode==='w'?wr:all;p.innerHTML=`<div class="card" style="margin:0 0 12px"><h2>${CV.mode==='w'?'Correctivos de la semana '+wl+' ('+fx(rows.length,0)+')':'Correctivos de la campaña '+CV.se+' ('+fx(rows.length,0)+')'} <span class="mut" style="font-weight:400">· toca una orden para ver sus materiales</span></h2><div id="cvl"></div></div>`;cvTable($('#cvl'),rows,{wk:CV.mode==='c'})}else if(p)p.innerHTML=''}
 
 recEvents();ghInit();ghEvents();shEvents();ghLoad();stkLoadShared();shBoot();$('#xpl').onclick=planDownload;$('#spub').onclick=async()=>{const e=$('#pmsg');try{e.textContent='Publicando…';const r=await sapPublish();mMsg();e.textContent+=' Publicado → '+r.join(' · ')+'.'}catch(x){e.textContent='No se publicó: '+x.message}};mMsg();
 </script></main></body></html>
