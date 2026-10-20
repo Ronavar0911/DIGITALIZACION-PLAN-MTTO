@@ -127,6 +127,15 @@ details.ana{margin-bottom:12px}details.ana>summary{cursor:pointer;list-style:non
 .zh{display:flex;justify-content:space-between;align-items:baseline;gap:8px;margin-bottom:10px}.zh b{font-size:12px;letter-spacing:.08em;color:var(--mut)}.zh span{font-size:12px;color:var(--mut)}
 .kp.k3{grid-template-columns:repeat(3,1fr);margin:0}.kp.k1{grid-template-columns:1fr;margin:0}.wkz .k,.cvz .k{padding:8px 10px}.wkz .k b,.cvz .k b{font-size:20px}
 @media(max-width:700px){.kp.k3{grid-template-columns:repeat(2,1fr)}}
+
+/* zonas de la semana: tarjetas del mismo tamaño que llenan cada cajetín */
+.wkrow{min-height:270px}
+.wkz,.cvz{display:flex;flex-direction:column}
+.wkz .kp,.cvz .kp{flex:1;align-content:stretch;grid-auto-rows:1fr;gap:10px}
+.kp.k3{grid-template-rows:repeat(2,1fr)}.kp.k1{grid-template-rows:repeat(2,1fr)}
+.wkz .k,.cvz .k{display:flex;flex-direction:column;justify-content:center;min-height:0}
+.wkz .k b,.cvz .k b{font-size:24px}
+@media(max-width:1250px) and (min-width:801px){.cvz .kp.k1{grid-template-columns:1fr 1fr;grid-template-rows:auto}}
 </style></head><body><main>
 <input type="file" id="f" accept=".xlsx,.xlsm" hidden>
 <header id="top" hidden><div class="logo sm" role="img" aria-label="Hortifrut"></div><div class="tt"><h1>Plan anual de mantenimiento</h1><div class="mut" id="msg2"></div><div class="mut" id="shs"></div></div><div class="shb"><button id="shsv" hidden>Guardar cambios</button><button id="shpub" hidden>Publicar plan para todos</button><button id="shrl" class="btn2" hidden>Actualizar</button><button id="shcn" class="btn2" hidden>Conectar para guardar</button><label class="btn2" for="f" title="Solo para el administrador: carga otro Excel y publícalo para todos">Cargar otro plan</label></div></header>
