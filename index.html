@@ -725,4 +725,4 @@ function cvDraw(){const host=$('#cvk'),p=$('#cvp');if(!host)return;const d=CV.d;
  if(CV.open){const rows=CV.mode==='w'?wr:all;p.innerHTML=`<div class="card" style="margin:0 0 12px"><h2>${CV.mode==='w'?'Correctivos de la semana '+wl+' ('+fx(rows.length,0)+')':'Correctivos de la campaña '+CV.se+' ('+fx(rows.length,0)+')'} <span class="mut" style="font-weight:400">· toca una orden para ver sus materiales</span></h2><div id="cvl"></div></div>`;cvTable($('#cvl'),rows,{wk:CV.mode==='c'})}else if(p)p.innerHTML=''}
 
 recEvents();ghInit();ghEvents();shEvents();ghLoad();stkLoadShared();shBoot();$('#xpl').onclick=planDownload;$('#spub').onclick=async()=>{const e=$('#pmsg');try{e.textContent='Publicando…';const r=await sapPublish();CV.k='';CV.ready=false;CV.d=null;try{cvUpdate()}catch(_){}mMsg();e.textContent+=' Publicado → '+r.join(' · ')+'.'}catch(x){e.textContent='No se publicó: '+x.message}};mMsg();
-</script></main></body></html>
+</script></main><div style="position:fixed;left:8px;bottom:4px;font:10px system-ui;color:#8aa0b8;opacity:.8;z-index:5;pointer-events:none">versión de la app: 22-oct-2026 · c</div></body></html>
