@@ -188,7 +188,7 @@ details.ana{margin-bottom:12px}details.ana>summary{cursor:pointer;list-style:non
 <div class="wkrow wkrow2"><div class="card wsz"><div class="wsb"><small>SEMANA A PROGRAMAR</small><div class="big"><button id="pwp" aria-label="Semana anterior">‹</button><b id="pwn">–</b><button id="pwx" aria-label="Semana siguiente">›</button></div><span id="pwd"></span></div></div><div class="wkz" id="pk1"></div><div class="wkz mz" id="pk2"></div></div>
 <div class="card sapbar" id="pmat"><span class="mut" id="pmsg">Sin stock. Carga el archivo o usa el stock compartido cuando esté publicado.</span><span class="sapa"><label class="btn2" for="fstk" title="Stock actual (APP_STOCK_MATERIALES.xlsx) · única carga">Cargar maestro de stock (.xlsx)</label><input type="file" id="fstk" accept=".xlsx" hidden><button id="spub" hidden title="Guarda en el repositorio el stock, las reservas y las OTs de la temporada, para que todos las vean sin cargar el archivo">Publicar datos de SAP para todos</button></span></div>
 <div class="card pwork">
-<div class="pbar"><div class="seg" id="pv"><button data-v="p" class="on">Programa de jornales</button><button data-v="g">Diagrama de Gantt</button><button data-v="m">Materiales de la semana</button></div><button id="pmb">+ Fila manual (CAPEX, MC…)</button><button id="xpg" title="Descarga en Excel lo que ves en pantalla: hojas WK, GANTT y MATERIALES de la semana">Descargar programa (.xlsx)</button>
+<div class="pbar"><div class="seg" id="pv"><button data-v="p" class="on">Programa de jornales</button><button data-v="g">Diagrama de Gantt</button><button data-v="m">Materiales de la semana</button></div><button id="pmb">+ Fila manual (CAPEX, MC…)</button><button id="xpg" title="Descarga en Excel lo que ves en pantalla: hojas WK, GANTT y MATERIALES de la semana">Descargar programa (.xlsx)</button><button id="xiw" title="Genera la carga masiva IW31 (LSMW): una orden preventiva OM03 por actividad del programa, en Excel y en TXT">Exportar IW31 (LSMW)</button>
 <div class="lg"><span><i style="background:var(--ac)"></i>Programada</span><span><i style="background:var(--bad)"></i>Pendiente traída</span><span><i style="background:var(--fp)"></i>Adelantada</span><span><i style="background:var(--ad)"></i>Manual</span></div></div>
 <div class="pfl"><label>Traer pendientes de<select id="pb"><option value="0">Ninguna (solo esta semana)</option><option value="1" selected>1 semana atrás</option><option value="2">2 semanas atrás</option><option value="4">4 semanas atrás</option><option value="99">toda la campaña</option></select></label>
 <label>Adelantar de las próximas<select id="pf"><option value="0">Ninguna</option><option value="1">1 semana</option><option value="2">2 semanas</option><option value="4">4 semanas</option></select></label>
@@ -333,7 +333,7 @@ function pgInit(){const W=D.weeks,i=W.findIndex(k=>k.key===V.cut),n=W[Math.min(W
  $('#pwp').onclick=()=>pgStep(-1);$('#pwx').onclick=()=>pgStep(1);$('#pmb').onclick=()=>{$('#pman').hidden=!$('#pman').hidden};
  $('#pm1').innerHTML=$('#pm2').innerHTML=DS.map((d,i)=>`<option value="${i}">${d}</option>`).join('');$('#pm2').value=0;
  $('#fstk').onchange=async e=>{try{const f=e.target.files[0];if(f){$('#pmsg').textContent='Leyendo stock…';stkFrom(await f.arrayBuffer());M.src='archivo';M.file=f.name;M.mod=f.lastModified?new Date(f.lastModified).toISOString():'';mMsg();pgRender();recRender()}}catch(x){$('#pmsg').textContent='No se pudo leer el stock: '+x.message}};
- $('#xpg').onclick=pgDownload;
+ $('#xpg').onclick=pgDownload;$('#xiw').onclick=pgIW31;
  $('#pma').onclick=()=>{const n=$('#pmn').value.trim();if(!n)return;const a=+$('#pm1').value,b=+$('#pm2').value,j=+$('#pmj').value||0,d=Array(7).fill(0);for(let i=Math.min(a,b);i<=Math.max(a,b);i++)d[i]=j;P.man.push({id:++P.seq,a:null,o:'man',pw:[],aw:[],tipo:$('#pmt').value,name:n.toUpperCase(),sec:$('#pms').value,area:'Manual',resp:wresp($('#pmt').value),jr:j,d,on:true});$('#pmn').value='';pgGen()};
  $('#pgb').onchange=e=>{const t=e.target,r=P.rows[+(t.dataset.r??t.dataset.on??t.dataset.rs)];if(!r)return;if(t.dataset.on!=null)r.on=t.checked;else if(t.dataset.rs!=null)r.resp=t.value;else r.d[+t.dataset.d]=Math.max(0,+t.value||0);pgRender()};
  $('#pgb').onclick=e=>{const b=e.target.closest('[data-rm]');if(!b)return;const r=P.rows[+b.dataset.rm];P.man=P.man.filter(x=>x!==r);pgGen()};pgGen();recRender()}
@@ -520,6 +520,26 @@ async function pgBuild(){const WB=new ExcelJS.Workbook();WB.creator='Plan de man
  const mc=Mt.getCell(tr,9);mc.value={formula:ML.length?`SUM(I4:I${tr-1})`:'0',result:Math.round(P.mat.cost*100)/100};mc.font=FH;mc.fill=fl('1D5FA8');mc.numFmt='#,##0.00';Mt.getCell(tr,10).fill=fl('1D5FA8');
  if(!ML.length){Mt.getCell(4,1).value='Ninguna labor incluida tiene materiales asignados.';Mt.getCell(4,1).font={...F,italic:true}}
  return await WB.xlsx.writeBuffer()}
+
+const IW={cl:'OM03',pr:2,ce:'PB03',gp:'HG2',rs:'JEFERIEG',ac:'110',pt:'OPRIEG',h:9.25};
+function pgIW31(){const m=$('#msg2');try{const out=[],sinD=[],sinJ=[];let man=0;
+ P.rows.forEach(r=>{if(!r.on)return;if(!r.a){man++;return}const a=r.a,di=[];r.d.forEach((v,i)=>{if(v>0)di.push(i)});
+  const eq=String(a.dni||'').trim(),tx=String(a.otm||wname(a)).replace(/["\r\n\t]+/g,' ').trim();if(!eq)sinD.push(tx);
+  const js=r.d.reduce((x,y)=>x+y,0),jo=js>0?Math.max(1,Math.round(js)):0,f0=di.length?di[0]:null,f1=di.length?di[di.length-1]:null;if(!jo)sinJ.push(tx);
+  const dt=i=>{if(i==null)return null;const d=isoMon(P.y,P.w);d.setUTCDate(d.getUTCDate()+i);return d};
+  out.push({A:IW.cl,B:IW.pr,C:eq,D:IW.ce,E:tx.slice(0,40),F:IW.gp,G:IW.rs,H:IW.ac,I:dt(f0),J:dt(f1),K:null,L:tx.slice(0,40),M:IW.pt,N:jo?nm(jo*IW.h):null,O:jo||null,P:null,Q:null,_l:tx.length>40})});
+ if(!out.length)throw new Error('no hay actividades del plan activas en el programa');
+ const H=['Cl.orden','Prioridad','Equipo','Ce.planif.','Texto breve','Gpo.plan.','Rs.pto.tr.','Cl.actv.PM','Inic.extr.','Fin extr.','Ini.avería','Operación','PtoTrab/Ce','TrabInvert','Cantidad','Dur.oper.','Campo clasif.'],K='ABCDEFGHIJKLMNOPQ'.split('');
+ const WB=new ExcelJS.Workbook(),ws=WB.addWorksheet('Carga_IW31');ws.addRow(H);ws.getRow(1).font={bold:true,color:{argb:'FFFFFFFF'}};ws.getRow(1).eachCell(c=>c.fill={type:'pattern',pattern:'solid',fgColor:{argb:'FF1F3864'}});
+ [10,9,12,10,40,9,11,10,12,12,12,40,11,11,9,10,14].forEach((w,i)=>ws.getColumn(i+1).width=w);
+ out.forEach(o=>{const row=ws.addRow(K.map(k=>o[k]));[3,4,5,7,8,12,13].forEach(c=>row.getCell(c).numFmt='@');[9,10,11].forEach(c=>row.getCell(c).numFmt='dd/mm/yyyy');
+  [3,5,12].forEach(c=>{if(!row.getCell(c).value)row.getCell(c).fill={type:'pattern',pattern:'solid',fgColor:{argb:'FFFFC7CE'}}})});
+ ws.views=[{state:'frozen',ySplit:1}];
+ const f2=d=>d?String(d.getUTCDate()).padStart(2,'0')+String(d.getUTCMonth()+1).padStart(2,'0')+d.getUTCFullYear():'';
+ const txt=[H.join('\t')].concat(out.map(o=>K.map(k=>{const v=o[k];return v==null?'':v instanceof Date?f2(v):String(v)}).join('\t'))).join('\r\n')+'\r\n';
+ const nmf=`IW31_WK${P.w}_${P.y}`;WB.xlsx.writeBuffer().then(b=>{dl(nmf+'.xlsx',b,XMIME);setTimeout(()=>dl(nmf+'.txt',Uint8Array.from(txt,c=>c.charCodeAt(0)<256?c.charCodeAt(0):63),'text/plain'),400);
+  const av=[];if(sinD.length)av.push(sinD.length+' sin equipo (DNI)');if(sinJ.length)av.push(sinJ.length+' sin jornales (Cantidad vacía)');if(man)av.push(man+' filas manuales no incluidas');
+  m.textContent=`IW31 de la semana ${P.w}: ${out.length} órdenes ${IW.cl}`+(av.length?' · Revisar: '+av.join(', '):'')}).catch(x=>{m.textContent='No se pudo generar el IW31: '+x.message})}catch(x){m.textContent='No se pudo generar el IW31: '+x.message}}
 async function pgDownload(){const m=$('#msg2');try{m.textContent='Preparando el Excel…';if(!P.rows.length)throw new Error('no hay labores en el programa');const b=await pgBuild();dl(`PROGRAMA_SEMANAL_WK${P.w}_${P.y}.xlsx`,b,XMIME);m.textContent=`Programa de la semana ${P.w} descargado (hojas WK, GANTT y MATERIALES)`}catch(x){m.textContent='No se pudo generar el Excel: '+x.message}}
 /* ===== BASE COMPARTIDA DE RECETAS (GitHub) ===== */
 const GHC='gh_cfg_v0',GHT='gh_tok_v0';let GH={owner:'',repo:'',path:'data/recetas.json',branch:'main',tok:'',user:'',rev:0};
@@ -750,4 +770,4 @@ function cvDraw(){const host=$('#cvk'),p=$('#cvp');if(!host)return;const d=CV.d;
  if(CV.open){const rows=CV.mode==='w'?wr:all;p.innerHTML=`<div class="card" style="margin:0 0 12px"><h2>${CV.mode==='w'?'Correctivos de la semana '+wl+' ('+fx(rows.length,0)+')':'Correctivos de la campaña '+CV.se+' ('+fx(rows.length,0)+')'} <span class="mut" style="font-weight:400">· toca una orden para ver sus materiales</span></h2><div id="cvl"></div></div>`;cvTable($('#cvl'),rows,{wk:CV.mode==='c'})}else if(p)p.innerHTML=''}
 
 $('#rutb').onclick=()=>{const h=$('#rutp');h.hidden=!h.hidden;rutPanel()};recEvents();ghInit();ghEvents();shEvents();ghLoad();stkLoadShared();shBoot();$('#xpl').onclick=planDownload;$('#spub').onclick=async()=>{const e=$('#pmsg');try{e.textContent='Publicando…';const r=await sapPublish();CV.k='';CV.ready=false;CV.d=null;try{cvUpdate()}catch(_){}mMsg();e.textContent+=' Publicado → '+r.join(' · ')+'.'}catch(x){e.textContent='No se publicó: '+x.message}};mMsg();
-</script></main><div style="position:fixed;left:8px;bottom:4px;font:10px system-ui;color:#8aa0b8;opacity:.8;z-index:5;pointer-events:none">versión de la app: 18-nov-2026 · j</div></body></html>
+</script></main><div style="position:fixed;left:8px;bottom:4px;font:10px system-ui;color:#8aa0b8;opacity:.8;z-index:5;pointer-events:none">versión de la app: 18-nov-2026 · k</div></body></html>
