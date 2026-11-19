@@ -188,7 +188,7 @@ details.ana{margin-bottom:12px}details.ana>summary{cursor:pointer;list-style:non
 <div class="wkrow wkrow2"><div class="card wsz"><div class="wsb"><small>SEMANA A PROGRAMAR</small><div class="big"><button id="pwp" aria-label="Semana anterior">‹</button><b id="pwn">–</b><button id="pwx" aria-label="Semana siguiente">›</button></div><span id="pwd"></span></div></div><div class="wkz" id="pk1"></div><div class="wkz mz" id="pk2"></div></div>
 <div class="card sapbar" id="pmat"><span class="mut" id="pmsg">Sin stock. Carga el archivo o usa el stock compartido cuando esté publicado.</span><span class="sapa"><label class="btn2" for="fstk" title="Stock actual (APP_STOCK_MATERIALES.xlsx) · única carga">Cargar maestro de stock (.xlsx)</label><input type="file" id="fstk" accept=".xlsx" hidden><button id="spub" hidden title="Guarda en el repositorio el stock, las reservas y las OTs de la temporada, para que todos las vean sin cargar el archivo">Publicar datos de SAP para todos</button></span></div>
 <div class="card pwork">
-<div class="pbar"><div class="seg" id="pv"><button data-v="p" class="on">Programa de jornales</button><button data-v="g">Diagrama de Gantt</button><button data-v="m">Materiales de la semana</button></div><button id="pmb">+ Fila manual (CAPEX, MC…)</button><button id="xpg" title="Descarga en Excel lo que ves en pantalla: hojas WK, GANTT y MATERIALES de la semana">Descargar programa (.xlsx)</button><button id="xiw" title="Genera la carga masiva IW31 (LSMW) en Excel: una orden preventiva OM03 por actividad del programa">Exportar IW31 (LSMW)</button>
+<div class="pbar"><div class="seg" id="pv"><button data-v="p" class="on">Programa de jornales</button><button data-v="g">Diagrama de Gantt</button><button data-v="m">Materiales de la semana</button></div><button id="pmb">+ Fila manual (CAPEX, MC…)</button><button id="xpg" title="Descarga en Excel lo que ves en pantalla: hojas WK, GANTT y MATERIALES de la semana">Descargar programa (.xlsx)</button><button id="xtl" title="Genera las filas de la semana en el formato del archivo de seguimiento de Telmo (DIARIO): una fila por actividad y día, para pegar o cargar">Exportar seguimiento (Telmo)</button><button id="xiw" title="Genera la carga masiva IW31 (LSMW) en Excel: una orden preventiva OM03 por actividad del programa">Exportar IW31 (LSMW)</button>
 <div class="lg"><span><i style="background:var(--ac)"></i>Programada</span><span><i style="background:var(--bad)"></i>Pendiente traída</span><span><i style="background:var(--fp)"></i>Adelantada</span><span><i style="background:var(--ad)"></i>Manual</span></div></div>
 <div class="pfl"><label>Traer pendientes de<select id="pb"><option value="0">Ninguna (solo esta semana)</option><option value="1" selected>1 semana atrás</option><option value="2">2 semanas atrás</option><option value="4">4 semanas atrás</option><option value="99">toda la campaña</option></select></label>
 <label>Adelantar de las próximas<select id="pf"><option value="0">Ninguna</option><option value="1">1 semana</option><option value="2">2 semanas</option><option value="4">4 semanas</option></select></label>
@@ -334,7 +334,7 @@ function pgInit(){const W=D.weeks,i=W.findIndex(k=>k.key===V.cut),n=W[Math.min(W
  $('#pwp').onclick=()=>pgStep(-1);$('#pwx').onclick=()=>pgStep(1);$('#pmb').onclick=()=>{$('#pman').hidden=!$('#pman').hidden};
  $('#pm1').innerHTML=$('#pm2').innerHTML=DS.map((d,i)=>`<option value="${i}">${d}</option>`).join('');$('#pm2').value=0;
  $('#fstk').onchange=async e=>{try{const f=e.target.files[0];if(f){$('#pmsg').textContent='Leyendo stock…';stkFrom(await f.arrayBuffer());M.src='archivo';M.file=f.name;M.mod=f.lastModified?new Date(f.lastModified).toISOString():'';mMsg();pgRender();recRender()}}catch(x){$('#pmsg').textContent='No se pudo leer el stock: '+x.message}};
- $('#xpg').onclick=pgDownload;$('#xiw').onclick=pgIW31;
+ $('#xpg').onclick=pgDownload;$('#xiw').onclick=pgIW31;$('#xtl').onclick=pgTelmo;
  $('#pma').onclick=()=>{const n=$('#pmn').value.trim();if(!n)return;const a=+$('#pm1').value,b=+$('#pm2').value,j=+$('#pmj').value||0,d=Array(7).fill(0);const dy=Array(7).fill(0);for(let i=Math.min(a,b);i<=Math.max(a,b);i++){d[i]=j;dy[i]=1}P.man.push({id:++P.seq,a:null,o:'man',pw:[],aw:[],tipo:$('#pmt').value,name:n.toUpperCase(),sec:$('#pms').value,area:'Manual',resp:wresp($('#pmt').value),jr:j,d,dy,on:true});$('#pmn').value='';pgGen()};
  $('#pgb').onchange=e=>{const t=e.target,r=P.rows[+(t.dataset.r??t.dataset.on??t.dataset.rs)];if(!r)return;if(t.dataset.on!=null)r.on=t.checked;else if(t.dataset.rs!=null)r.resp=t.value;else{const q=String(t.value).trim().replace(',','.'),i=+t.dataset.d;r.dy=r.dy||Array(7).fill(0);if(q===''){r.dy[i]=0;r.d[i]=0}else{const n=parseFloat(q);r.dy[i]=1;r.d[i]=isNaN(n)?0:Math.max(0,n)}}pgRender()};
  $('#pgb').onclick=e=>{const b=e.target.closest('[data-rm]');if(!b)return;const r=P.rows[+b.dataset.rm];P.man=P.man.filter(x=>x!==r);pgGen()};pgGen();recRender()}
@@ -522,6 +522,23 @@ async function pgBuild(){const WB=new ExcelJS.Workbook();WB.creator='Plan de man
  if(!ML.length){Mt.getCell(4,1).value='Ninguna labor incluida tiene materiales asignados.';Mt.getCell(4,1).font={...F,italic:true}}
  return await WB.xlsx.writeBuffer()}
 
+
+function pgTelmo(){const m=$('#msg2');try{const lin=[];
+ P.rows.forEach(r=>{if(!r.on)return;const di=dyi(r);if(!di.length)return;const a=r.a,tx=String(a?(a.otm||wname(a)):r.name).replace(/[\r\n\t]+/g,' ').trim(),tm=a?(a.tm==='MC'?'MC':'MP'):(r.tipo==='MC'?'MC':'MP');
+  di.forEach(i=>{const d=isoMon(P.y,P.w);d.setUTCDate(d.getUTCDate()+i);lin.push({d,i,t:tx,j:r.d[i]>0?r.d[i]:null,tm,eq:r.sec||'',ev:a&&r.a.tm==='EVALUACION'})})});
+ if(!lin.length)throw new Error('no hay actividades con día asignado');
+ const nd=P.nd;for(let i=0;i<nd;i++){const d=isoMon(P.y,P.w);d.setUTCDate(d.getUTCDate()+i);lin.push({d,i,t:'CORRECTIVO',j:P.crew.corr||null,tm:'MC',eq:'',c:1})}
+ lin.sort((x,y)=>x.i-y.i||(x.c?1:0)-(y.c?1:0)||x.t.localeCompare(y.t));
+ const WB=new ExcelJS.Workbook(),ws=WB.addWorksheet('DIARIO');
+ const H=['FECHA','DESCRIPCION','JORNALES','T. MTTO','OTM','EQUIPO','UBICACIÓN','N° RESERVA','H.INICIO','H.FINAL','HORAS EXTRAS / EVENTOS'];
+ ws.addRow(H);ws.getRow(1).font={bold:true,color:{argb:'FFFFFFFF'}};ws.getRow(1).eachCell(c=>{c.fill={type:'pattern',pattern:'solid',fgColor:{argb:'FF1F3864'}};c.alignment={vertical:'middle',wrapText:true}});
+ [12,44,10,9,13,10,22,13,10,10,24].forEach((w,i)=>ws.getColumn(i+1).width=w);
+ let last=-1;lin.forEach(o=>{const r=ws.addRow([o.d,o.t,o.j,o.tm,null,o.eq,null,null,null,null,null]);r.getCell(1).numFmt='dd/mm/yyyy';[9,10].forEach(c=>r.getCell(c).numFmt='hh:mm');r.getCell(5).numFmt='@';
+  r.getCell(4).alignment={horizontal:'center'};r.getCell(3).alignment={horizontal:'center'};
+  if(o.i!==last&&last>=0)r.eachCell({includeEmpty:true},c=>c.border={top:{style:'thin',color:{argb:'FF8EA9C8'}}});
+  if(o.c)r.eachCell({includeEmpty:true},c=>c.fill={type:'pattern',pattern:'solid',fgColor:{argb:'FFFFF4D6'}});last=o.i});
+ ws.views=[{state:'frozen',ySplit:1}];ws.autoFilter={from:'A1',to:'K1'};
+ WB.xlsx.writeBuffer().then(b=>{dl(`SEGUIMIENTO_TELMO_WK${P.w}_${P.y}.xlsx`,b,XMIME);m.textContent=`Seguimiento de la semana ${P.w}: ${lin.length} filas (${lin.filter(o=>!o.c).length} actividades + ${lin.filter(o=>o.c).length} de correctivo). OTM, reserva, horas y jornales los completa Telmo.`}).catch(x=>{m.textContent='No se pudo generar el seguimiento: '+x.message})}catch(x){m.textContent='No se pudo generar el seguimiento: '+x.message}}
 const IW={cl:'OM03',pr:2,ce:'PB03',gp:'HG2',rs:'JEFERIEG',ac:'110',pt:'OPRIEG',h:9.25};
 function pgIW31(){const m=$('#msg2');try{const out=[],sinD=[],sinJ=[];let man=0;
  P.rows.forEach(r=>{if(!r.on)return;if(!r.a){man++;return}const a=r.a,di=dyi(r);
@@ -771,4 +788,4 @@ function cvDraw(){const host=$('#cvk'),p=$('#cvp');if(!host)return;const d=CV.d;
  if(CV.open){const rows=CV.mode==='w'?wr:all;p.innerHTML=`<div class="card" style="margin:0 0 12px"><h2>${CV.mode==='w'?'Correctivos de la semana '+wl+' ('+fx(rows.length,0)+')':'Correctivos de la campaña '+CV.se+' ('+fx(rows.length,0)+')'} <span class="mut" style="font-weight:400">· toca una orden para ver sus materiales</span></h2><div id="cvl"></div></div>`;cvTable($('#cvl'),rows,{wk:CV.mode==='c'})}else if(p)p.innerHTML=''}
 
 $('#rutb').onclick=()=>{const h=$('#rutp');h.hidden=!h.hidden;rutPanel()};recEvents();ghInit();ghEvents();shEvents();ghLoad();stkLoadShared();shBoot();$('#xpl').onclick=planDownload;$('#spub').onclick=async()=>{const e=$('#pmsg');try{e.textContent='Publicando…';const r=await sapPublish();CV.k='';CV.ready=false;CV.d=null;try{cvUpdate()}catch(_){}mMsg();e.textContent+=' Publicado → '+r.join(' · ')+'.'}catch(x){e.textContent='No se publicó: '+x.message}};mMsg();
-</script></main><div style="position:fixed;left:8px;bottom:4px;font:10px system-ui;color:#8aa0b8;opacity:.8;z-index:5;pointer-events:none">versión de la app: 18-nov-2026 · l</div></body></html>
+</script></main><div style="position:fixed;left:8px;bottom:4px;font:10px system-ui;color:#8aa0b8;opacity:.8;z-index:5;pointer-events:none">versión de la app: 19-nov-2026 · m</div></body></html>
